@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="App.MainPage" x:Name="Main">
+    <!-- xmlns:xct="clr-namespace:Xamarin.CommunityToolkit.Effects;assembly=Xamarin.CommunityToolkit.MauiCompat" -->
+    <ScrollView>
+        <VerticalStackLayout
+            Spacing="25"
+            Padding="30,0"
+            VerticalOptions="Center">
+            <Image
+                Source="trace_moe.png"
+                SemanticProperties.Description="a trace.moe app"
+                HeightRequest="105"
+                HorizontalOptions="Center" />
+            <Button x:Name="PickPicBtn" Text="pick a picture" Clicked="OnPickPicClicked" HorizontalOptions="Center" />
+            <Entry x:Name="ImageUrlEntry" Placeholder="Image URL" Completed="OnImageUrlEntryCompleted"
+                   HorizontalOptions="Center" MinimumWidthRequest="400" />
+            <CollectionView x:Name="ResultCollectionView" HorizontalOptions="Center"
+                            BindingContext="{x:Reference Main}" ItemsSource="{Binding resultList}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <!-- xct:TouchEffect.LongPressCommand="{Binding longPressCommand,Source={x:Reference Main}}" -->
+                            <!-- xct:TouchEffect.LongPressCommandParameter="{Binding filename}" -->
+                            <Image Grid.RowSpan="6" Source="{Binding image}"
+                                   Aspect="AspectFill" IsVisible="{Binding isImage}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Image_OnTapped" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <toolkit:MediaElement Grid.RowSpan="6" Source="{Binding video}" Aspect="AspectFill"
+                                                  IsVisible="{Binding isVideo}" />
+                            <Label Grid.Column="1" Text="{Binding filename}" VerticalOptions="Start"
+                                   Style="{StaticResource TitleLabel}" TextDecorations="Underline">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Title_OnTapped" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Grid.Row="1" Grid.Column="1" Style="{StaticResource LinkLabel}"
+                                   Text="{Binding anilist,StringFormat='Anilist ID: {0}'}" FontAttributes="Italic">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OpenWebviewPage" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Grid.Row="2" Grid.Column="1" VerticalOptions="Start"
+                                   Text="{Binding episode, StringFormat='Episode {0}'}" />
+                            <Label Grid.Row="3" Grid.Column="1" VerticalOptions="Start">
+                                <Label.Text>
+                                    <MultiBinding StringFormat="{}{0}~{1}">
+                                        <Binding Path="start" />
+                                        <Binding Path="end" />
+                                    </MultiBinding>
+                                </Label.Text>
+                            </Label>
+                            <Label Grid.Row="4" Grid.Column="1" VerticalOptions="Start"
+                                   Text='{Binding similarity, StringFormat="Similarity: {0}"}' />
+                            <Label Grid.Row="5" Grid.Column="1" VerticalOptions="Start"
+                                   Style="{StaticResource LinkLabel}"
+                                   Text="Show details" FontAttributes="Italic">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ShowDetailMessage" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

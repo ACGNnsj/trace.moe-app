@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <TargetFrameworks>net7.0-android;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>
+<!--        <TargetFramework>net7.0-android</TargetFramework>-->
+<!--        <TargetFrameworks>$(TargetFrameworks);net7.0-ios;net7.0-maccatalyst</TargetFrameworks>-->
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
         <!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
@@ -29,20 +29,49 @@
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 
+<!--        <WindowsPackageType>None</WindowsPackageType>-->
         <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
         <TieredPGO>true</TieredPGO>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU;x64</Platforms>
+        <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+        <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+        <PackageCertificateThumbprint>3E52078B185090E4FF4754158BCE1EDA33591795</PackageCertificateThumbprint>
+        <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+        <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+        <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+        <GenerateTestArtifacts>True</GenerateTestArtifacts>
+        <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+
+        <UnpackagedDeployment>True</UnpackagedDeployment>
+        <WindowsAppSDKSelfContained Condition="'$(UnpackagedDeployment)'=='True'">true</WindowsAppSDKSelfContained>
     </PropertyGroup>
+
+    <Target Condition="'$(UnpackagedDeployment)'=='True'" Name="CopyResources" AfterTargets="AfterBuild">
+        <CreateItem Include="$(_InitialMSBuildProjectExtensionsPath)$(Platform)/$(Configuration)/$(TargetFramework)/$(RuntimeIdentifier)/resizetizer/f/*">
+            <Output TaskParameter="Include" ItemName="ResizetizerFonts"/>
+        </CreateItem>
+        <Copy SourceFiles="@(ResizetizerFonts)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true"/>
+        <CreateItem Include="$(_InitialMSBuildProjectExtensionsPath)$(Platform)/$(Configuration)/$(TargetFramework)/$(RuntimeIdentifier)/resizetizer/r/*">
+            <Output TaskParameter="Include" ItemName="ResizetizerImages"/>
+        </CreateItem>
+        <Copy SourceFiles="@(ResizetizerImages)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true"/>
+        <CreateItem Include="$(_InitialMSBuildProjectExtensionsPath)$(Platform)/$(Configuration)/$(TargetFramework)/$(RuntimeIdentifier)/resizetizer/sp/*">
+            <Output TaskParameter="Include" ItemName="ResizetizerSplashs"/>
+        </CreateItem>
+        <Copy SourceFiles="@(ResizetizerSplashs)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true"/>
+    </Target>
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+        <MauiIcon Include="Resources\AppIcon\trace_moe_icon.svg" />
 
         <!-- Splash Screen -->
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
         <!-- Images -->
         <MauiImage Include="Resources\Images\*" />
-<!--        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />-->
+        <!--        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />-->
         <MauiImage Update="Resources\Images\trace_moe.svg" BaseSize="429.00000000000006,105.58684093929996" />
 
         <!-- Custom Fonts -->
@@ -55,7 +84,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
         <PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="1.0.2" />
-<!--        <PackageReference Include="CommunityToolkit.Maui" Version="5.1.0" />-->
-<!--        <PackageReference Include="Xamarin.CommunityToolkit.MauiCompat" Version="2.0.2-preview1013" />-->
+        <!--        <PackageReference Include="CommunityToolkit.Maui" Version="5.1.0" />-->
+        <!--        <PackageReference Include="Xamarin.CommunityToolkit.MauiCompat" Version="2.0.2-preview1013" />-->
     </ItemGroup>
 </Project>
